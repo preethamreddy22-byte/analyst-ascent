@@ -4,10 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>Analyst Ascent</title>
-<script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
 <style>
   :root {
     --bg:#eef3fa; --bg2:#e7eef8; --card:#ffffff;
@@ -20,6 +16,16 @@
     --shadow:0 18px 48px rgba(20,50,95,.13);
     --shadow-sm:0 2px 8px rgba(20,50,95,.06);
   }
+
+  [data-theme="dark"] {
+    --bg:#1a1f2e; --bg2:#242938; --card:#2d3347;
+    --line:#3d4460; --line-2:#4a5270;
+    --ink:#e8eaf6; --text:#e8eaf6; --muted:#9099bf; --faint:#6b7299;
+    --primary:#4f8ef7; --teal:#3dd6a3; --blue:#4f8ef7; --violet:#9b7ae8;
+    --green:#3dd6a3; --green-dim:#2a9e78; --amber:#f7b84f; --red:#f76f6f;
+    --shadow:0 18px 48px rgba(0,0,0,.5); --shadow-sm:0 2px 8px rgba(0,0,0,.4);
+  }
+
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html, body { margin:0; height:100%; }
   body {
@@ -153,10 +159,57 @@
   .center { text-align:center; }
   .small { font-size:12px; color:var(--muted); }
   .hide { display:none !important; }
+
+/* Dark mode toggle */
+.dm-toggle { position:absolute; top:12px; right:14px; background:none; border:1px solid var(--line); border-radius:20px; padding:4px 10px; font-size:12px; cursor:pointer; color:var(--muted); transition:all .2s; z-index:10; }
+.dm-toggle:hover { border-color:var(--primary); color:var(--primary); }
+
+/* Back to menu button */
+.back-btn { display:inline-flex; align-items:center; gap:5px; background:none; border:1px solid var(--line); border-radius:10px; padding:6px 12px; font-size:12px; cursor:pointer; color:var(--muted); margin-bottom:10px; transition:all .2s; }
+.back-btn:hover { border-color:var(--primary); color:var(--primary); }
+
+/* Prev question button */
+.prev-btn { display:inline-flex; align-items:center; gap:4px; background:none; border:1px solid var(--line); border-radius:10px; padding:6px 12px; font-size:12px; cursor:pointer; color:var(--muted); transition:all .2s; }
+.prev-btn:hover { border-color:var(--teal); color:var(--teal); }
+.prev-btn:disabled { opacity:.3; cursor:not-allowed; }
+.nav-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+
+/* Hint button */
+.hint-btn { display:inline-flex; align-items:center; gap:4px; background:none; border:1px solid var(--amber); border-radius:10px; padding:6px 12px; font-size:12px; cursor:pointer; color:var(--amber); transition:all .2s; }
+.hint-btn:hover { background:rgba(245,158,11,.1); }
+.hint-btn:disabled { opacity:.3; cursor:not-allowed; }
+.hint-box { background:rgba(245,158,11,.08); border:1px solid var(--amber); border-radius:10px; padding:10px 14px; font-size:13px; color:var(--amber); margin:8px 0; display:none; line-height:1.5; }
+.hint-box.show { display:block; }
+.hint-cost { font-size:10px; opacity:.7; }
+
+/* Share button */
+.share-btn { display:inline-flex; align-items:center; gap:5px; background:var(--primary); border:none; border-radius:12px; padding:8px 16px; font-size:13px; cursor:pointer; color:#fff; transition:all .2s; }
+.share-btn:hover { opacity:.85; }
+
+/* Leaderboard */
+.lb-wrap { margin-top:16px; }
+.lb-title { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:8px; }
+.lb-row { display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:var(--bg2,#f6f9fd); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; font-size:13px; }
+.lb-row .lb-mode { font-weight:600; color:var(--ink); }
+.lb-row .lb-score { font-family:var(--mono); color:var(--primary); font-weight:700; }
+.lb-row .lb-date { font-size:11px; color:var(--muted); }
+.lb-empty { font-size:13px; color:var(--muted); text-align:center; padding:12px 0; }
+
+/* Progress tracking */
+.prog-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+.prog-card { background:var(--bg2,#f6f9fd); border:1px solid var(--line); border-radius:12px; padding:10px 12px; }
+.prog-card .pc-label { font-size:10px; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); margin-bottom:4px; }
+.prog-card .pc-val { font-size:18px; font-weight:700; font-family:var(--mono); color:var(--primary); }
+.prog-card .pc-sub { font-size:11px; color:var(--muted); }
+
+/* End screen extras */
+.end-actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+
 </style>
 </head>
 <body>
 <div class="app">
+  <button class="dm-toggle" onclick="toggleDark()" id="dmBtn">🌙 Dark</button>
   <div class="ticker"><span>EBITDA ▲ 2.4% · WACC 8.1% · FCF +$1.2M · P/E 18.3 · IRR 14.7% · CAGR 9.2% · DSO 41 · CURRENT RATIO 1.8 · GROSS MARGIN 62% · EV/EBITDA 11.2x ·</span></div>
   <div class="pad">
 
@@ -171,12 +224,19 @@
       </div>
       <button class="btn" onclick="Game.start('industry')">Industry Basics<span class="sub">Valuation, M&A, buy-side vs. sell-side — case style</span></button>
       <button class="btn" onclick="Game.dojo()">⌨️ Shortcut Dojo<span class="sub">Press the real Excel combo — watch it work on a live P&L</span></button>
-      <div class="center small" id="bestLine"></div>
+      
+    <div id="progSection" style="margin-top:14px;">
+      <div class="lb-title">📊 Your Progress</div>
+      <div class="prog-grid" id="progGrid"></div>
+    </div>
+    <div class="center small" id="bestLine"></div>
     </section>
 
     <!-- QUIZ -->
     <section id="screen-quiz" class="hide">
       <div class="hud">
+    <button class="back-btn" onclick="Game.goHome()">← Menu</button>
+    
         <span class="pill">SCORE <b id="score">0</b></span>
         <span class="pill">STREAK <b id="streak">0</b><span id="mult"></span></span>
         <span class="pill lives" id="lives">❤️❤️❤️</span>
@@ -187,7 +247,12 @@
       <span class="cat terms" id="catTag">TERMS</span>
       <div class="scenario" id="scenario"></div>
       <div class="q" id="question">…</div>
-      <div id="options"></div>
+      <div class="nav-row">
+      <button class="prev-btn" id="prevBtn" onclick="Game.prev()" disabled>← Prev</button>
+      <button class="hint-btn" id="hintBtn" onclick="Game.showHint()">💡 Hint <span class="hint-cost">(-10 pts)</span></button>
+    </div>
+    <div class="hint-box" id="hintBox"></div>
+    <div id="options"></div>
       <div class="explain hide" id="explain"></div>
       <button class="btn primary hide" id="nextBtn" onclick="Game.next()">Next ▸</button>
     </section>
@@ -225,6 +290,14 @@
       </div>
       <div class="explain" id="endTip"></div>
       <button class="btn primary" onclick="Game.toStart()">Back to Desk</button>
+    <div class="end-actions">
+      <button class="share-btn" onclick="Game.share()">📤 Share Score</button>
+      <button class="btn ghost" onclick="show('screen-start')">🏠 Home</button>
+    </div>
+    <div class="lb-wrap">
+      <div class="lb-title">🏆 Your Best Scores</div>
+      <div id="lbList"></div>
+    </div>
     </section>
 
   </div>
@@ -869,11 +942,159 @@ const Dojo = {
 
 function showBest(){ const b=+(localStorage.getItem('aa_best')||0); $('bestLine').textContent=b>0?'Best score: '+b:''; }
 showBest();
+
+// ── DARK MODE ──────────────────────────────────────────────────────────────
+function toggleDark(){
+  const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme', isDark?'light':'dark');
+  document.getElementById('dmBtn').textContent = isDark?'🌙 Dark':'☀️ Light';
+  localStorage.setItem('aa_theme', isDark?'light':'dark');
+}
+(function initTheme(){
+  const t=localStorage.getItem('aa_theme')||'light';
+  document.documentElement.setAttribute('data-theme',t);
+  document.addEventListener('DOMContentLoaded',()=>{
+    const b=document.getElementById('dmBtn');
+    if(b) b.textContent=t==='dark'?'☀️ Light':'🌙 Dark';
+  });
+})();
+
+// ── STORAGE HELPERS ────────────────────────────────────────────────────────
+const AA = {
+  getScores(){ try{ return JSON.parse(localStorage.getItem('aa_scores')||'{}'); }catch(e){ return {}; } },
+  setScore(mode, score, total){
+    const s=this.getScores();
+    if(!s[mode]||score>s[mode].best){
+      s[mode]={best:score,total,date:new Date().toLocaleDateString()};
+      localStorage.setItem('aa_scores',JSON.stringify(s));
+    }
+    return s;
+  },
+  getStats(){
+    const s=this.getScores();
+    return Object.entries(s).map(([k,v])=>({mode:k,...v}));
+  }
+};
+
+// ── LEADERBOARD RENDER ─────────────────────────────────────────────────────
+function renderLeaderboard(){
+  const el=document.getElementById('lbList');
+  if(!el) return;
+  const stats=AA.getStats();
+  if(!stats.length){ el.innerHTML='<div class="lb-empty">No scores yet — play a round!</div>'; return; }
+  el.innerHTML=stats.map(s=>`
+    <div class="lb-row">
+      <span class="lb-mode">${s.mode}</span>
+      <span class="lb-score">${s.best} pts</span>
+      <span class="lb-date">${s.date}</span>
+    </div>`).join('');
+}
+
+// ── PROGRESS RENDER ────────────────────────────────────────────────────────
+function renderProgress(){
+  const el=document.getElementById('progGrid');
+  if(!el) return;
+  const stats=AA.getStats();
+  if(!stats.length){ el.innerHTML='<div class="lb-empty" style="grid-column:span 2">Play a round to see your stats!</div>'; return; }
+  const totalGames=stats.length;
+  const bestScore=Math.max(...stats.map(s=>s.best));
+  const bestMode=stats.find(s=>s.best===bestScore)?.mode||'—';
+  const totalPlayed=stats.reduce((a,s)=>a+(s.total||0),0);
+  el.innerHTML=`
+    <div class="prog-card"><div class="pc-label">Best score</div><div class="pc-val">${bestScore}</div><div class="pc-sub">${bestMode}</div></div>
+    <div class="prog-card"><div class="pc-label">Modes played</div><div class="pc-val">${totalGames}</div><div class="pc-sub">categories</div></div>
+    <div class="prog-card"><div class="pc-label">Qs answered</div><div class="pc-val">${totalPlayed}</div><div class="pc-sub">total</div></div>
+    <div class="prog-card"><div class="pc-label">Avg best</div><div class="pc-val">${totalGames?Math.round(stats.reduce((a,s)=>a+s.best,0)/totalGames):0}</div><div class="pc-sub">pts/mode</div></div>`;
+}
+
+// ── GAME EXTENSIONS ────────────────────────────────────────────────────────
+(function patchGame(){
+  const _render = Game.render.bind(Game);
+  const _finish = Game.finish.bind(Game);
+  const _start  = Game.start.bind(Game);
+
+  Game._history = [];
+  Game._hintUsed = false;
+  Game._mode = '';
+
+  Game.start = function(mode){
+    Game._history = [];
+    Game._hintUsed = false;
+    Game._mode = mode || '';
+    _start(mode);
+    Game._history.push(Game.i);
+    renderPrevBtn();
+    hideHint();
+  };
+
+  Game.render = function(){
+    _render();
+    Game._hintUsed = false;
+    hideHint();
+    renderPrevBtn();
+  };
+
+  Game.prev = function(){
+    if(Game._history.length>1){
+      Game._history.pop();
+      Game.i = Game._history[Game._history.length-1];
+      Game.solved = false;
+      Game.render();
+    }
+  };
+
+  Game.goHome = function(){
+    Game.stop();
+    show('screen-start');
+    renderProgress();
+    showBest();
+  };
+
+  Game.showHint = function(){
+    if(Game._hintUsed) return;
+    const t = Game.deck[Game.i];
+    if(!t||!t.e||!t.e.tip) return;
+    Game._hintUsed = true;
+    Game.score = Math.max(0, Game.score - 10);
+    document.getElementById('dScore') && (document.getElementById('dScore').textContent = Game.score);
+    const hb = document.getElementById('hintBox');
+    if(hb){ hb.textContent = '💡 ' + t.e.tip; hb.classList.add('show'); }
+    const hBtn = document.getElementById('hintBtn');
+    if(hBtn){ hBtn.disabled = true; hBtn.style.opacity='.4'; }
+  };
+
+  Game.share = function(){
+    const mode = Game._mode || 'Quiz';
+    const txt = '🏆 Analyst Ascent — ' + mode + '\nScore: ' + Game.score + ' pts | Hits: ' + Game.hits + '/' + Game.deck.length + '\nPlay at analyst-ascent.vercel.app';
+    if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(()=>toast('📋 Copied to clipboard!','var(--green)')); }
+    else { prompt('Copy your score:', txt); }
+  };
+
+  const _finish_orig = Game.finish.bind(Game);
+  Game.finish = function(){
+    _finish_orig();
+    AA.setScore(Game._mode||'Quiz', Game.score, Game.deck.length);
+    renderLeaderboard();
+  };
+
+  function renderPrevBtn(){
+    const b = document.getElementById('prevBtn');
+    if(b) b.disabled = (Game._history.length <= 1);
+  }
+  function hideHint(){
+    const hb = document.getElementById('hintBox');
+    if(hb){ hb.textContent=''; hb.classList.remove('show'); }
+    const hBtn = document.getElementById('hintBtn');
+    if(hBtn){ hBtn.disabled=false; hBtn.style.opacity='1'; }
+  }
+})();
+
+// Init on load
+document.addEventListener('DOMContentLoaded', function(){
+  renderProgress();
+  renderLeaderboard();
+});
+
 </script>
-<!-- Vercel Speed Insights -->
-<script>
-  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/speed-insights/script.js"></script>
 </body>
 </html>
