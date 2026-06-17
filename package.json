@@ -1,0 +1,20 @@
+{
+  "name": "analyst-ascent",
+  "version": "1.0.0",
+  "description": "Master finance fundamentals while you play. Learn financial metrics, accounting, valuation, and Excel shortcuts through scenario-based questions.",
+  "scripts": {
+    "build": "echo 'Static HTML site - no build needed'",
+    "dev": "python3 -m http.server 8000 || python -m SimpleHTTPServer 8000"
+  },
+  "keywords": [
+    "finance",
+    "excel",
+    "learning",
+    "analytics"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/analytics": "^1.3.1"
+  }
+}
