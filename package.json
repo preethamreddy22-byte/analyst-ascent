@@ -1,0 +1,24 @@
+{
+  "name": "analyst-ascent",
+  "version": "1.0.0",
+  "description": "📊 Analyst Ascent — Master finance fundamentals while you play.  Learn financial metrics, accounting, valuation, and 40+ Excel shortcuts through scenario-based questions and live demos. Answer, build your streak, climb from Intern to CFO.",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "test": "echo \"No tests specified\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/preethamreddy22-byte/analyst-ascent.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/preethamreddy22-byte/analyst-ascent/issues"
+  },
+  "homepage": "https://github.com/preethamreddy22-byte/analyst-ascent#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
