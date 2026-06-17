@@ -1030,12 +1030,14 @@ function renderProgress(){
   var _render=Game.render.bind(Game);
   var _end=Game.end.bind(Game);
   var _start=Game.start.bind(Game);
+  var _next=Game.next.bind(Game);
   Game._history=[];Game._hintUsed=false;Game._mode="";
   Game.start=function(mode){
     Game._history=[];Game._hintUsed=false;Game._mode=mode||"";
     _start(mode);Game._history.push(Game.i);renderPrevBtn();hideHint();
   };
   Game.render=function(){_render();Game._hintUsed=false;hideHint();renderPrevBtn();};
+  Game.next=function(){_next();Game._history.push(Game.i);renderPrevBtn();};
   Game.prev=function(){
     if(Game._history.length>1){Game._history.pop();Game.i=Game._history[Game._history.length-1];Game.solved=false;Game.render();}
   };
