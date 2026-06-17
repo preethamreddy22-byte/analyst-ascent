@@ -325,7 +325,7 @@
       <button class="btn primary" onclick="Game.toStart()">Back to Desk</button>
     <div class="end-actions">
       <button class="share-btn" onclick="Game.share()">📤 Share Score</button>
-      <button class="btn ghost" onclick="show('screen-start')">🏠 Home</button>
+      <button class="btn ghost" onclick="show('start')">🏠 Home</button>
     </div>
     <div class="lb-wrap">
       <div class="lb-title">🏆 Your Best Scores</div>
@@ -1039,7 +1039,7 @@ function renderProgress(){
   Game.prev=function(){
     if(Game._history.length>1){Game._history.pop();Game.i=Game._history[Game._history.length-1];Game.solved=false;Game.render();}
   };
-  Game.goHome=function(){clearInterval(Game.timer);show("screen-start");renderProgress();showBest();};
+  Game.goHome=function(){clearInterval(Game.timer);show("start");renderProgress();showBest();};
   Game.showHint=function(){
     if(Game._hintUsed)return;
     var t=Game.deck[Game.i];if(!t||!t.e||!t.e.tip)return;
